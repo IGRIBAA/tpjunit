@@ -30,4 +30,57 @@ class TicketMachineTest {
 		// Les montants ont été correctement additionnés
 		assertEquals(10 + 20, machine.getBalance(), "La balance n'est pas correctement mise à jour");
 	}
+	@Test
+	//S3: N'imprine pas si pas assez d'argent
+	void nImprimePasSiBalanceInsuffisante(){
+		//GIVEN: une machine vierge (initialisée dans @BeforeEach)
+		//WHEN on ne met pas assez d'argent
+		machine.insertMoney( PRICE-1);
+		//THEN ça n'imprime pas
+		assertFalse(machine.printTicket(),"Pas assez d'argent, on ne doit pas imprimer");
+	}
+	@Test
+		//S4: imprine si assez d'argent
+	void ImprimePasSiBalanceInsuffisante(){
+		//GIVEN: une machine vierge (initialisée dans @BeforeEach)
+		//WHEN on ne met pas assez d'argent
+		machine.insertMoney( PRICE);
+		//THEN ça n'imprime pas
+		assertTrue(machine.printTicket(),"il y a assez d'argent, on doit imprimer");
+	}
+
+	@Test
+		//S5: Quand on imprime un ticket la balance est décrémentée du prix du ticket
+	void DecrementePrixTicket(){
+		// GIVEN: une machine avec suffisamment d'argent
+		machine.insertMoney(PRICE); // Insérer exactement le prix du ticket
+		// WHEN on imprime le ticket
+		boolean result = machine.printTicket();
+		// THEN ça imprime le ticket et la balance est décrémentée du prix
+		assertTrue(result, "Le ticket doit être imprimé");
+		assertEquals(0, machine.getBalance(), "La balance doit être à zéro après l'achat");
+	}
+
+	@Test
+	void testRefund() {
+		TicketMachine machine = new TicketMachine(PRICE);
+		machine.insertMoney(PRICE);
+		// Vérifier la balance avant le remboursement
+		assertEquals(PRICE, machine.getBalance(), "La balance devrait être de 150 centimes avant le remboursement");
+
+		// Effectuer le remboursement et vérifier que la somme est correcte
+		int refundedAmount = machine.refund();
+		assertEquals(PRICE, refundedAmount, "Le montant remboursé devrait être de 150 centimes");
+
+		// Vérifier que la balance a été réinitialisée à zéro après le remboursement
+		assertEquals(0, machine.getBalance(), "La balance doit être réinitialisée à 0 après le remboursement");
+
+		// Vérifier que le total collecté n'a pas été affecté par le remboursement
+		assertEquals(0, machine.getTotal(), "Le total collecté ne doit pas être affecté par le remboursement");
+	}
+
+
+
+
+
 }
