@@ -45,6 +45,13 @@ public class TicketMachine {
 	 *
 	 * @return the total amount collected by the machine.
 	 */
+
+	public void setPrice(int newPrice) {
+		if (newPrice <= 0) {
+			throw new IllegalArgumentException("Price must be positive");
+		}
+		price = newPrice;
+	}
 	public int getTotal() {
 		return total;
 	}
@@ -63,9 +70,12 @@ public class TicketMachine {
 	 * @throws IllegalArgumentException if amount is not positive
 	 */
 	public void insertMoney(int amount) {
-
+		if (amount <= 0) {
+			throw new IllegalArgumentException("Amount must be positive");
+		}
 		balance = balance + amount;
 	}
+
 
 	/**
 	 * Refunds the balance to customer
@@ -74,8 +84,11 @@ public class TicketMachine {
 	 */
 	public int refund() {
 		System.out.println("Je vous rends : " + balance + " centimes");
-		return balance;
+		int refundedAmount = balance;
+		balance = 0; // reset the balance
+		return refundedAmount;
 	}
+
 
 	/**
 	 * Print a ticket. Update the total collected and reduce the balance 
@@ -86,24 +99,30 @@ public class TicketMachine {
 		if (balance < price) {
 			// Si pas assez d'argent, ne pas imprimer et retourner false
 			return false;
-		}else{
-			// Simuler l'impression d'un ticket
-			System.out.println("##################");
-			System.out.println("# The BlueJ Line");
-			System.out.println("# Ticket");
-			System.out.println("# " + price + " cents.");
-			System.out.println("##################");
-			System.out.println();
+		}
 
-			// Déduire le montant du prix du ticket de la balance
-			balance -= price;
+		// Simulate the printing of a ticket.
+		System.out.println("##################");
+		System.out.println("# The BlueJ Line");
+		System.out.println("# Ticket");
+		System.out.println("# " + price + " cents.");
+		System.out.println("##################");
+		System.out.println();
 
-			// Ajouter le montant au total collecté
-			total += price;
+		// Calculer l'excédent
+		int excess = balance - price;
 
-			return true;
-			}
+		// Ajouter le montant du ticket au total collecté
+		total += price;
+
+		// Rembourser l'excédent si nécessaire
+		if (excess > 0) {
+			System.out.println("Remboursement : " + excess + " centimes");
+		}
+
+		// Réinitialiser la balance après l'impression
+		balance = 0;
+		return true;
 	}
-
 
 }
