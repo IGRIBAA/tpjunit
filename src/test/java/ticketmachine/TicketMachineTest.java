@@ -62,23 +62,30 @@ class TicketMachineTest {
 	}
 
 	@Test
-	void testRefund() {
-		TicketMachine machine = new TicketMachine(PRICE);
-		machine.insertMoney(PRICE);
-		// Vérifier la balance avant le remboursement
-		assertEquals(PRICE, machine.getBalance(), "La balance devrait être de 150 centimes avant le remboursement");
-
-		// Effectuer le remboursement et vérifier que la somme est correcte
-		int refundedAmount = machine.refund();
-		assertEquals(PRICE, refundedAmount, "Le montant remboursé devrait être de 150 centimes");
-
-		// Vérifier que la balance a été réinitialisée à zéro après le remboursement
-		assertEquals(0, machine.getBalance(), "La balance doit être réinitialisée à 0 après le remboursement");
-
-		// Vérifier que le total collecté n'a pas été affecté par le remboursement
-		assertEquals(0, machine.getTotal(), "Le total collecté ne doit pas être affecté par le remboursement");
+		// S6 : L'argent excédentaire doit être retourné
+	void remainingMoneyIsReturnedAfterPrinting() {
+		machine.insertMoney(70); // On insère 70 centimes
+		boolean printed = machine.printTicket();
+		assertTrue(printed, "Le ticket devrait être imprimé");
+		assertEquals(0, machine.getBalance(), "La balance devrait être réinitialisée à 0");
+		assertEquals(20, machine.getTotal(), "Le total collecté devrait être 50");
 	}
 
+	@Test
+		// S7 : On peut rembourser de l'argent
+	void refundReturnsCorrectAmount() {
+		machine.insertMoney(100);
+		int refundedAmount = machine.refund();
+		assertEquals(100, refundedAmount, "Le montant remboursé doit être égal à la balance");
+		assertEquals(0, machine.getBalance(), "La balance doit être réinitialisée après remboursement");
+	}
+
+	@Test
+		// S8 : On peut changer le prix du ticket
+	void canChangePrice() {
+		machine.setPrice(60); // Changer le prix à 60 centimes
+		assertEquals(60, machine.getPrice(), "Le prix du ticket doit être mis à jour");
+	}
 
 
 
