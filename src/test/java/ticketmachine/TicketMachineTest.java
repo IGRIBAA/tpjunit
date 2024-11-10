@@ -77,7 +77,7 @@ class TicketMachineTest {
 		machine.printTicket(PRICE);
 		// int prix2 = machine.getBalance();
 		int monnaieRendue = machine.refund();
-		assertEquals(monnaieRendue/*prix2 */, 10, "Monnaie non rendu correctement");
+		assertEquals(monnaieAmount/*prix2 */, 10, "Monnaie non rendu correctement");
 	}
 
 	@Test
