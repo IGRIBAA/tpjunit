@@ -62,31 +62,47 @@ class TicketMachineTest {
 	}
 
 	@Test
-		// S6 : L'argent excédentaire doit être retourné
-	void remainingMoneyIsReturnedAfterPrinting() {
-		machine.insertMoney(70); // On insère 70 centimes
-		boolean printed = machine.printTicket();
-		assertTrue(printed, "Le ticket devrait être imprimé");
-		assertEquals(0, machine.getBalance(), "La balance devrait être réinitialisée à 0");
-		assertEquals(20, machine.getTotal(), "Le total collecté devrait être 50");
+	// S6 : le montant collecté est mis à jour quand on imprime un ticket (pas avant)
+	void mettreAJourApresImpression(){
+		machine.insertMoney(PRICE);
+		int prix1 = machine.getTotal();
+		machine.printTicket(PRICE);
+		assertEquals(machine.getTotal(), prix1+PRICE, "Operation incorrecte");
 	}
 
 	@Test
-		// S7 : On peut rembourser de l'argent
-	void refundReturnsCorrectAmount() {
-		machine.insertMoney(100);
-		int refundedAmount = machine.refund();
-		assertEquals(100, refundedAmount, "Le montant remboursé doit être égal à la balance");
-		assertEquals(0, machine.getBalance(), "La balance doit être réinitialisée après remboursement");
+	// S7 : refund() rend correctement la monnaie
+	void refundRendCorrectementMonnaie(){
+		machine.insertMoney(PRICE+10);
+		machine.printTicket(PRICE);
+		// int prix2 = machine.getBalance();
+		int monnaieRendue = machine.refund();
+		assertEquals(monnaieRendue/*prix2 */, 10, "Monnaie non rendu correctement");
 	}
 
 	@Test
-		// S8 : On peut changer le prix du ticket
-	void canChangePrice() {
-		machine.setPrice(60); // Changer le prix à 60 centimes
-		assertEquals(60, machine.getPrice(), "Le prix du ticket doit être mis à jour");
+	// S8 : refund() remet la balance à zéro
+	void refundRendBalanceAZero(){
+		machine.insertMoney(PRICE);
+		machine.refund();
+		int refund = machine.getBalance();
+		assertEquals(refund, 0, "Operation non aboutie correctement");
 	}
 
+	@Test
+	// S9 : On ne peut pas insérer un montant négatif
+	void verifierMontant(){
+		int valeurNegatif = -1 * PRICE;
+		assertFalse(machine.insertMoney(valeurNegatif), "Operation ne peut pas aboutir");
+	}
+
+	@Test
+	// S10 : on ne peut pas créer de machine qui délivre des tickets dont le prix est négatif
+	void verifierPrixTicket() {
+		Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, () -> new TicketMachine(-PRICE));
+
+		assertEquals("Ticket price must be positive", exception.getMessage(), "L'exception n'a pas le message attendu");
+	}
 
 
 
